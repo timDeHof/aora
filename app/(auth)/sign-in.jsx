@@ -1,19 +1,37 @@
 import { Link, router } from "expo-router";
-import { View, Text, Image, ScrollView, Dimensions } from "react-native";
+import { View, Text, Image, ScrollView, Dimensions, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { signIn } from "../../lib/appwrite";
 import { images } from "../../constants";
 import CustomButton from "../../components/CustomButton";
 import FormField from "../../components/FormField";
 const Signin = () => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [form, setForm] = useState({ email: "", password: "" });
+
+	const submit = async () => {
+		if (!form.email || !form.password) {
+			Alert.alert("Error", "Please fill all fields");
+			return;
+		}
+		setIsSubmitting(true);
+		try {
+			const result = await signIn(form.email, form.password);
+			// set it to global state..
+			router.replace("/home");
+		} catch (error) {
+			Alert.alert("Error", error.message);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
 	return (
 		<SafeAreaView className='h-full bg-primary'>
 			<ScrollView>
 				<View
-					className='flex justify-center w-full h-full px-4 my-6'
+					className='flex justify-center w-full min-h-[85vh] px-4 my-6'
 					style={{
 						minHeight: Dimensions.get("window").height - 100,
 					}}>
@@ -37,12 +55,12 @@ const Signin = () => {
 						value={form.password}
 						handleChangeText={(e) => setForm({ ...form, password: e })}
 						otherStyles='mt-7'
-						keyboardType='password'
+						keyboardType='visible-password'
 					/>
 
 					<CustomButton
 						title='Log In'
-						handlePress={() => {}}
+						handlePress={submit}
 						containerStyles='mt-7'
 						isLoading={isSubmitting}
 					/>

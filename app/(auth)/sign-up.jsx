@@ -1,23 +1,41 @@
-import { View, Text, ScrollView, Dimensions, Image } from "react-native";
+import { View, Text, ScrollView, Dimensions, Image, Alert } from "react-native";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
 import { images } from "../../constants";
 import CustomButton from "../../components/CustomButton";
 import FormField from "../../components/FormField";
+import { createUser } from "../../lib/appwrite";
 const Signup = () => {
-	const [isSubmitting, setSubmitting] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [form, setForm] = useState({
 		username: "",
 		email: "",
 		password: "",
 	});
 
+	const submit = async () => {
+		if (!form.username || !form.email || !form.password) {
+			Alert.alert("Error", "Please fill all fields");
+			return;
+		}
+		setIsSubmitting(true);
+		try {
+			const result = await createUser(form.email, form.password, form.username);
+			// set it to global state..
+			router.replace("/home");
+		} catch (error) {
+			Alert.alert("Error", error.message);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
 	return (
 		<SafeAreaView className='h-full bg-primary'>
 			<ScrollView>
 				<View
-					className='flex justify-center w-full h-full px-4 my-6'
+					className='flex justify-center w-full min-h-[85vh] px-4 my-6'
 					style={{
 						minHeight: Dimensions.get("window").height - 100,
 					}}>
@@ -55,7 +73,7 @@ const Signup = () => {
 
 					<CustomButton
 						title='Sign Up'
-						handlePress={() => {}}
+						handlePress={submit}
 						containerStyles='mt-7'
 						isLoading={isSubmitting}
 					/>
