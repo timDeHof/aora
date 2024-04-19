@@ -9,7 +9,7 @@ const VideoCard = ({
 		title,
 		video,
 		thumbnail,
-		creators: { username, avatar },
+		creator: { username, avatar },
 	},
 }) => {
 	const [play, setPlay] = React.useState(false);

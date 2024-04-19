@@ -9,8 +9,9 @@ import EmptyState from "../../components/EmptyState";
 import { getAllPosts, getLatestPosts } from "../../lib/appwrite";
 import useAppwrite from "../../lib/useAppwrite";
 import VideoCard from "../../components/VideoCard";
-
+import { useGlobalContext } from "../../context/GlobalProvider";
 const Search = () => {
+	const { user } = useGlobalContext();
 	const { data: posts, refetch } = useAppwrite(getAllPosts);
 	const { data: latestPosts } = useAppwrite(getLatestPosts);
 	const [refreshing, setRefreshing] = useState(false);
@@ -33,10 +34,10 @@ const Search = () => {
 							<View className='flex flex-row items-start justify-between mb-6'>
 								<View>
 									<Text className='text-sm text-gray-100 font-pmedium'>
-										Welcome Back
+										Welcome Back,
 									</Text>
 									<Text className='text-2xl text-white font-psemibold'>
-										Tim
+										{user?.username}
 									</Text>
 								</View>
 								<View className='mt-1.5'>

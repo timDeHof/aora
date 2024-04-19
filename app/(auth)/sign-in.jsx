@@ -2,11 +2,13 @@ import { Link, router } from "expo-router";
 import { View, Text, Image, ScrollView, Dimensions, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { signIn } from "../../lib/appwrite";
+import { signIn, getCurrentUser } from "../../lib/appwrite";
 import { images } from "../../constants";
 import CustomButton from "../../components/CustomButton";
 import FormField from "../../components/FormField";
+import { useGlobalContext } from "../../context/GlobalProvider";
 const Signin = () => {
+	const { setUser, setIsLoggedIn } = useGlobalContext();
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [form, setForm] = useState({ email: "", password: "" });
 
@@ -17,8 +19,10 @@ const Signin = () => {
 		}
 		setIsSubmitting(true);
 		try {
-			const result = await signIn(form.email, form.password);
-			// set it to global state..
+			await signIn(form.email, form.password);
+			const result = await getCurrentUser();
+			setUser(result);
+			setIsLoggedIn(true);
 			router.replace("/home");
 		} catch (error) {
 			Alert.alert("Error", error.message);
